@@ -19,13 +19,22 @@
                     <div class="date" id="current-date"></div>
                 </div>
                 
+                <div class="temperature-toggle">
+                    <span class="toggle-label">°C</span>
+                    <label class="switch">
+                        <input type="checkbox" id="temperature-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">°F</span>
+                </div>
+
                 <div class="current-weather">
                     <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="weather-icon">
                     <div class="temperature-container">
-                        <div class="current-temperature"><span id="current-temperature">--</span>°C</div>
+                        <div class="current-temperature"><span id="current-temperature-today">--</span>°<span class="temperature-unit">C</span></div>
                         <div class="temperature-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-today">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-today">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                     <div class="weather-description">Descrição do tempo</div>
@@ -39,48 +48,48 @@
                         <div class="day-name">Amanhã</div>
                         <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
                         <div class="forecast-temp-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-day-2">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-day-2">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                     <div class="forecast-day">
                         <div class="day-name">Terça</div>
                         <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
                         <div class="forecast-temp-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-day-3">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-day-3">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                     <div class="forecast-day">
                         <div class="day-name">Quarta</div>
                         <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
                         <div class="forecast-temp-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-day-4">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-day-4">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                     <div class="forecast-day">
                         <div class="day-name">Quinta</div>
                         <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
                         <div class="forecast-temp-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-day-5">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-day-5">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                     <div class="forecast-day">
                         <div class="day-name">Sexta</div>
                         <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
                         <div class="forecast-temp-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-day-6">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-day-6">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                     <div class="forecast-day">
                         <div class="day-name">Sábado</div>
                         <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
                         <div class="forecast-temp-range">
-                            <span class="min-temp">--°C</span>
-                            <span class="max-temp">--°C</span>
+                            <span class="min-temp"><span id="min-temperature-day-7">--</span>°<span class="temperature-unit">C</span></span>
+                            <span class="max-temp"><span id="max-temperature-day-7">--</span>°<span class="temperature-unit">C</span></span>
                         </div>
                     </div>
                 </div>

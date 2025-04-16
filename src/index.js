@@ -5,11 +5,15 @@ const searchInput = document.querySelector('.search-input');
 const searchButton = document.querySelector('.search-button');
 const locationDiv = document.getElementById('location');
 const weatherIcon = document.querySelector('.weather-icon');
-const temperatureContainer = document.querySelector('.temperature-container');
-const temperatureRange = document.querySelector('.temperature-range');
-const minTemp = document.querySelector('.min-temp');
-const maxTemp = document.querySelector('.max-temp');
 const weatherDescription = document.querySelector('.weather-description');
+const temperatureSpans = {
+  currentTemperatureToday: document.getElementById('current-temperature-today'),
+  minTemperature: [...document.querySelectorAll('.min-temp')],
+  maxTemperature: [...document.querySelectorAll('.max-temp')]
+};
+const temperatureToggle = document.getElementById('temperature-toggle');
+let isCelsius = false;
+let weatherData;
 
 function getCurrentDate() {
     const currentDate = new Date();
@@ -27,16 +31,66 @@ async function getWeatherData(city) {
     const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityEncoded}?unitGroup=us&key=${apiKey}&contentType=json`;
     const response = await fetch(url);
     const data = await response.json();
-    return data;
+    const { resolvedAddress, days } = data;
+    const [today, ...futureDays] = days;
+    const { temp: currentTemperature, description: currentTemperatureDescription } = today;
+    const minTemperatures = days.map(day => day.tempmin);
+    const maxTemperatures = days.map(day => day.tempmax);
+    
+    return { resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures, ...data };
 }
 
-function updateUI(weatherData) {
-    locationDiv.textContent = weatherData.resolvedAddress;
-    weatherIcon.src = weatherData.currentConditions.icon;
-    temperatureContainer.textContent = weatherData.currentConditions.temp;
-    temperatureRange.textContent = `${weatherData.currentConditions.tempmin}°C - ${weatherData.currentConditions.tempmax}°C`;
-    weatherDescription.textContent = weatherData.currentConditions.description;
+function farenheitToCelsius(farenheit) {
+  return Number(((farenheit - 32) * 5 / 9).toFixed(1));
 }
+
+function celsiusToFarenheit(celsius) {
+  return Number(((celsius * 9 / 5) + 32).toFixed(1));
+}
+
+function convertWeatherDataTemperatures() {
+  const convertFunction = isCelsius ? celsiusToFarenheit : farenheitToCelsius;
+  
+  weatherData.currentTemperature = convertFunction(weatherData.currentTemperature);
+  weatherData.minTemperatures = weatherData.minTemperatures.map(convertFunction);
+  weatherData.maxTemperatures = weatherData.maxTemperatures.map(convertFunction);
+
+  return weatherData;
+}
+
+function updateLocationUI(resolvedAddress) {
+    locationDiv.textContent = resolvedAddress;
+}
+
+function updateWeatherDescriptionUI(description) {
+    weatherDescription.textContent = description;
+}
+
+function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures }) {
+
+    // Atualiza temperatura atual
+    temperatureSpans.currentTemperatureToday.textContent = Math.round(currentTemperature);
+    temperatureSpans.minTemperature[0].textContent = Math.round(minTemperatures[0]);
+    temperatureSpans.maxTemperature[0].textContent = Math.round(maxTemperatures[0]);
+    
+    // Atualiza previsão dos próximos dias
+    for (let i = 1; i < 7; i++) {
+        temperatureSpans.minTemperature[i].textContent = Math.round(minTemperatures[i]);
+        temperatureSpans.maxTemperature[i].textContent = Math.round(maxTemperatures[i]);
+    }
+}
+
+function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures }) {
+    updateLocationUI(resolvedAddress);
+    updateWeatherDescriptionUI(currentTemperatureDescription);
+    updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures });
+}
+
+temperatureToggle.addEventListener('change', () => {
+  isCelsius = !isCelsius;
+  convertWeatherDataTemperatures(weatherData);
+  updateTemperaturesUI(weatherData);
+});
 
 searchInput.addEventListener('keyup', (event) => {
     if (event.key === 'Enter') {
@@ -46,19 +100,11 @@ searchInput.addEventListener('keyup', (event) => {
 
 searchButton.addEventListener('click', async () => {
     const city = searchInput.value;
-    const weatherData = await getWeatherData(city);
-    console.log(weatherData);
+    weatherData = await getWeatherData(city);
+    convertWeatherDataTemperatures();
     updateUI(weatherData);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    currentDateDiv.textContent = getCurrentDate();
+  currentDateDiv.textContent = getCurrentDate();
 });
-
-
-// fetch('https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Brasilia?unitGroup=us&key=RT55BEMXQ6UPTW6D2AKBF8AT5&contentType=json')
-//     .then(response => response.json())
-//     .then(data => console.log(data))
-//     .catch(error => {
-//         console.error('Error fetching weather data:', error);
-//     });
