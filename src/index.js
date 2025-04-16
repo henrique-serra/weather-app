@@ -9,7 +9,8 @@ const weatherDescription = document.querySelector('.weather-description');
 const temperatureSpans = {
   currentTemperatureToday: document.getElementById('current-temperature-today'),
   minTemperature: [...document.querySelectorAll('.min-temp')],
-  maxTemperature: [...document.querySelectorAll('.max-temp')]
+  maxTemperature: [...document.querySelectorAll('.max-temp')],
+  temperatureUnits: [...document.querySelectorAll('.temperature-unit')]
 };
 const temperatureToggle = document.getElementById('temperature-toggle');
 let isCelsius = false;
@@ -55,6 +56,8 @@ function convertWeatherDataTemperatures() {
   weatherData.minTemperatures = weatherData.minTemperatures.map(convertFunction);
   weatherData.maxTemperatures = weatherData.maxTemperatures.map(convertFunction);
 
+  isCelsius = !isCelsius;
+
   return weatherData;
 }
 
@@ -66,8 +69,7 @@ function updateWeatherDescriptionUI(description) {
     weatherDescription.textContent = description;
 }
 
-function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures }) {
-
+function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures, temperatureUnits }) {
     // Atualiza temperatura atual
     temperatureSpans.currentTemperatureToday.textContent = Math.round(currentTemperature);
     temperatureSpans.minTemperature[0].textContent = Math.round(minTemperatures[0]);
@@ -78,6 +80,11 @@ function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperat
         temperatureSpans.minTemperature[i].textContent = Math.round(minTemperatures[i]);
         temperatureSpans.maxTemperature[i].textContent = Math.round(maxTemperatures[i]);
     }
+
+    // Atualiza as unidades de temperatura
+    temperatureSpans.temperatureUnits.forEach(unit => {
+        unit.textContent = isCelsius ? 'C' : 'F';
+    });
 }
 
 function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures }) {
@@ -87,7 +94,6 @@ function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescr
 }
 
 temperatureToggle.addEventListener('change', () => {
-  isCelsius = !isCelsius;
   convertWeatherDataTemperatures(weatherData);
   updateTemperaturesUI(weatherData);
 });
