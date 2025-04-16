@@ -1,12 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
         <meta charset="utf-8" />
-        <title>Webpack App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather App</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☀️</text></svg>">
     </head>
     <body>
-        <h1>Hello world!</h1>
-        <h2>Tip: Check your console</h2>
+        <div class="container">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Digite uma cidade...">
+                <button class="search-button">Buscar</button>
+            </div>
+            
+            <div class="weather-today">
+                <div class="weather-header">
+                    <div class="location" id="location"></div>
+                    <div class="date" id="current-date"></div>
+                </div>
+                
+                <div class="current-weather">
+                    <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="weather-icon">
+                    <div class="temperature-container">
+                        <div class="current-temperature"><span id="current-temperature">--</span>°C</div>
+                        <div class="temperature-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                    <div class="weather-description">Descrição do tempo</div>
+                </div>
+            </div>
+
+            <div class="forecast-container">
+                <div class="forecast-title">Próximos 6 dias</div>
+                <div class="forecast-days">
+                    <div class="forecast-day">
+                        <div class="day-name">Amanhã</div>
+                        <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
+                        <div class="forecast-temp-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="day-name">Terça</div>
+                        <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
+                        <div class="forecast-temp-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="day-name">Quarta</div>
+                        <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
+                        <div class="forecast-temp-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="day-name">Quinta</div>
+                        <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
+                        <div class="forecast-temp-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="day-name">Sexta</div>
+                        <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
+                        <div class="forecast-temp-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="day-name">Sábado</div>
+                        <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Ícone do tempo" class="forecast-icon">
+                        <div class="forecast-temp-range">
+                            <span class="min-temp">--°C</span>
+                            <span class="max-temp">--°C</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
-    
 </html>

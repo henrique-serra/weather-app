@@ -3,6 +3,15 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+const env = dotenv.config({ path: '.env.local' }).parsed;
+
+// converte para o formato que DefinePlugin espera
+const envKeys = Object.keys(env).reduce((prev, next) => {
+  prev[`process.env.${next}`] = JSON.stringify(env[next]);
+  return prev;
+}, {});
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -24,6 +33,7 @@ const config = {
         new HtmlWebpackPlugin({
             template: 'index.html',
         }),
+        new webpack.DefinePlugin(envKeys),
 
         // Add your plugins here
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
