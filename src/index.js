@@ -1,10 +1,13 @@
 import './styles/styles.css';
 
+// Importa todos os arquivos SVG da pasta icons
+const iconsContext = require.context('./icons', false, /\.svg$/);
+
 const currentDateDiv = document.getElementById('current-date');
 const searchInput = document.querySelector('.search-input');
 const searchButton = document.querySelector('.search-button');
 const locationDiv = document.getElementById('location');
-const weatherIcon = document.querySelector('.weather-icon');
+const weatherIconsImg = document.querySelectorAll('.forecast-icon');
 const weatherDescription = document.querySelector('.weather-description');
 const temperatureSpans = {
   currentTemperatureToday: document.getElementById('current-temperature-today'),
@@ -16,6 +19,20 @@ const temperatureToggle = document.getElementById('temperature-toggle');
 const dayNames = document.querySelectorAll('.day-name');
 let isCelsius = false;
 let weatherData;
+
+class WeatherAPIError extends Error {
+    constructor(message, statusCode, details) {
+        super(message);
+        this.name = 'WeatherAPIError';
+        this.statusCode = statusCode;
+        this.details = details;
+    }
+}
+
+function getIconPath(iconName) {
+  const iconKey = `./${iconName}.svg`;
+  return iconsContext.keys().includes(iconKey) ? iconsContext(iconKey) : null;
+}
 
 function getDate(date = new Date()) {
   const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'short' });
@@ -40,18 +57,70 @@ function getNext6Days() {
 }
 
 async function getWeatherData(city) {
-    const apiKey = process.env.VISUALCROSSING_API_KEY;
-    const cityEncoded = encodeURIComponent(city);
-    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityEncoded}?unitGroup=us&key=${apiKey}&contentType=json`;
-    const response = await fetch(url);
-    const data = await response.json();
-    const { resolvedAddress, days } = data;
-    const [today, ...futureDays] = days;
-    const { temp: currentTemperature, description: currentTemperatureDescription } = today;
-    const minTemperatures = days.map(day => day.tempmin);
-    const maxTemperatures = days.map(day => day.tempmax);
-    
-    return { resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures, ...data };
+  try {
+      const apiKey = process.env.VISUALCROSSING_API_KEY;
+      if (!apiKey) {
+          throw new WeatherAPIError('Chave da API não encontrada', 401, 'A variável de ambiente VISUALCROSSING_API_KEY não está definida');
+      }
+
+      const cityEncoded = encodeURIComponent(city);
+      const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityEncoded}?unitGroup=us&key=${apiKey}&contentType=json`;
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+          let errorMessage = 'Erro ao buscar dados do clima';
+          let errorDetails = '';
+
+          switch (response.status) {
+              case 400:
+                  errorMessage = 'Parâmetros inválidos na requisição';
+                  break;
+              case 401:
+                  errorMessage = 'Chave da API inválida ou sem autorização';
+                  break;
+              case 404:
+                  errorMessage = 'Cidade não encontrada';
+                  break;
+              case 429:
+                  errorMessage = 'Limite de requisições excedido';
+                  break;
+              case 500:
+                  errorMessage = 'Erro interno do servidor';
+                  break;
+              default:
+                  errorMessage = `Erro desconhecido: ${response.status}`;
+          }
+
+          try {
+              const errorData = await response.json();
+              errorDetails = errorData.message || JSON.stringify(errorData);
+          } catch (e) {
+              errorDetails = 'Não foi possível obter detalhes do erro';
+          }
+
+          throw new WeatherAPIError(errorMessage, response.status, errorDetails);
+      }
+
+      const data = await response.json();
+      const { resolvedAddress, days } = data;
+      const [today, ...futureDays] = days;
+      const { temp: currentTemperature, description: currentTemperatureDescription } = today;
+      const minTemperatures = days.map(day => day.tempmin);
+      const maxTemperatures = days.map(day => day.tempmax);
+      const weatherIcons = days.map(day => day.icon);
+      
+      return { resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures, weatherIcons, ...data };
+  } catch (error) {
+      if (error instanceof WeatherAPIError) {
+          throw error;
+      }
+      throw new WeatherAPIError(
+          'Erro ao processar requisição',
+          500,
+          error.message
+      );
+  }
 }
 
 function farenheitToCelsius(farenheit) {
@@ -83,6 +152,12 @@ function updateWeatherDescriptionUI(description) {
 }
 
 function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures, temperatureUnits }) {
+    // Adiciona classe de transição
+    temperatureSpans.currentTemperatureToday.classList.add('temperature-transition');
+    temperatureSpans.minTemperature.forEach(span => span.classList.add('temperature-transition'));
+    temperatureSpans.maxTemperature.forEach(span => span.classList.add('temperature-transition'));
+    temperatureSpans.temperatureUnits.forEach(span => span.classList.add('temperature-transition'));
+
     // Atualiza temperatura atual
     temperatureSpans.currentTemperatureToday.textContent = Math.round(currentTemperature);
     temperatureSpans.minTemperature[0].textContent = Math.round(minTemperatures[0]);
@@ -98,6 +173,23 @@ function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperat
     temperatureSpans.temperatureUnits.forEach(unit => {
         unit.textContent = isCelsius ? '°C' : '°F';
     });
+
+    // Remove a classe de transição após a animação
+    setTimeout(() => {
+        temperatureSpans.currentTemperatureToday.classList.remove('temperature-transition');
+        temperatureSpans.minTemperature.forEach(span => span.classList.remove('temperature-transition'));
+        temperatureSpans.maxTemperature.forEach(span => span.classList.remove('temperature-transition'));
+        temperatureSpans.temperatureUnits.forEach(span => span.classList.remove('temperature-transition'));
+    }, 300);
+}
+
+function updateWeatherIconsUI(weatherData) {
+  const currentWeatherIcon = weatherData.currentWeatherIcon;
+  weatherIconsImg[0].src = getIconPath(currentWeatherIcon);
+  const weatherIcons = weatherData.weatherIcons;
+  for (let i = 0; i < 7; i++) {
+    weatherIconsImg[i].src = getIconPath(weatherIcons[i]);
+  }
 }
 
 function updateNext6DaysUI(next6Days) {
@@ -111,6 +203,7 @@ function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescr
     updateLocationUI(resolvedAddress);
     updateWeatherDescriptionUI(currentTemperatureDescription);
     updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures });
+    updateWeatherIconsUI(weatherData);
 }
 
 temperatureToggle.addEventListener('change', () => {
@@ -127,7 +220,10 @@ searchInput.addEventListener('keyup', (event) => {
 searchButton.addEventListener('click', async () => {
     const city = searchInput.value;
     weatherData = await getWeatherData(city);
-    if (!isCelsius) temperatureToggle.click();
+    if (!isCelsius) {
+        convertWeatherDataTemperatures();
+        updateTemperaturesUI(weatherData);
+    }
     updateUI(weatherData);
 });
 

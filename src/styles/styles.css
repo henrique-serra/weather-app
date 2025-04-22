@@ -100,11 +100,6 @@ body {
     gap: 15px;
 }
 
-.weather-icon {
-    width: 120px;
-    height: 120px;
-}
-
 .temperature-container {
     text-align: center;
 }
@@ -185,6 +180,11 @@ body {
     width: 50px;
     height: 50px;
     margin: 10px 0;
+}
+
+.forecast-icon:first-of-type {
+    width: 120px;
+    height: 120px;
 }
 
 .forecast-temp-range {
@@ -289,4 +289,33 @@ input:checked + .slider:before {
         width: 100px;
         height: 100px;
     }
+}
+
+.temperature-unit, .min-temp, .max-temp, #current-temperature-today {
+    transition: all 0.3s ease-in-out;
+}
+
+.temperature-transition {
+    animation: temperatureChange 0.3s ease-in-out;
+}
+
+@keyframes temperatureChange {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.current-weather .forecast-icon {
+    width: 120px;
+    height: 120px;
+}
+
+.forecast-day .forecast-icon {
+    width: 50px;
+    height: 50px;
 } 
