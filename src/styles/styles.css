@@ -118,7 +118,7 @@ body {
 
 .temperature-range {
     display: flex;
-    gap: 15px;
+    justify-content: space-around;
     margin-top: 10px;
     font-size: 18px;
     color: #666;
@@ -166,7 +166,7 @@ body {
 .forecast-day {
     background: var(--secondary-color);
     border-radius: 10px;
-    padding: 15px;
+    padding: 15px 7px;
     text-align: center;
     transition: transform 0.3s ease;
 }
@@ -189,8 +189,9 @@ body {
 
 .forecast-temp-range {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    justify-content: space-around;
+    gap: 2px;
+    white-space: nowrap;
     font-size: 14px;
     color: #666;
 }

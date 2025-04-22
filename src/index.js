@@ -13,17 +13,30 @@ const temperatureSpans = {
   temperatureUnits: [...document.querySelectorAll('.temperature-unit')]
 };
 const temperatureToggle = document.getElementById('temperature-toggle');
+const dayNames = document.querySelectorAll('.day-name');
 let isCelsius = false;
 let weatherData;
 
-function getCurrentDate() {
-    const currentDate = new Date();
-    const dayOfWeek = currentDate.toLocaleDateString('pt-BR', { weekday: 'long' });
-    const capitalizedDayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-    const day = currentDate.getDate();
-    const monthName = currentDate.toLocaleDateString('pt-BR', { month: 'long' });
-    const year = currentDate.getFullYear();
-    return `${capitalizedDayOfWeek}, ${day} de ${monthName} de ${year}`;
+function getDate(date = new Date()) {
+  const dayOfWeek = date.toLocaleDateString('pt-BR', { weekday: 'short' });
+  const capitalizedDayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+  const day = date.getDate();
+  const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
+  const year = date.getFullYear();
+  return { 
+    dayOfWeek: capitalizedDayOfWeek, day, monthName, year 
+  }
+}
+
+function getNext6Days() {
+  const UM_DIA_EM_MS = 24 * 60 * 60 * 1000; // 86400000 milissegundos  
+  const currentDate = new Date();
+  const next6Days = [];
+  for (let i = 1; i < 7; i++) {
+      const nextDay = new Date(currentDate.getTime() + UM_DIA_EM_MS * i);
+      next6Days.push(getDate(nextDay));
+  }
+  return next6Days;
 }
 
 async function getWeatherData(city) {
@@ -83,8 +96,15 @@ function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperat
 
     // Atualiza as unidades de temperatura
     temperatureSpans.temperatureUnits.forEach(unit => {
-        unit.textContent = isCelsius ? 'C' : 'F';
+        unit.textContent = isCelsius ? '°C' : '°F';
     });
+}
+
+function updateNext6DaysUI(next6Days) {
+  next6Days.forEach((d, i) => {
+    const { dayOfWeek, day, monthName, year } = d;
+    dayNames[i].textContent = dayOfWeek;
+  });
 }
 
 function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures }) {
@@ -94,7 +114,7 @@ function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescr
 }
 
 temperatureToggle.addEventListener('change', () => {
-  convertWeatherDataTemperatures(weatherData);
+  convertWeatherDataTemperatures();
   updateTemperaturesUI(weatherData);
 });
 
@@ -107,10 +127,13 @@ searchInput.addEventListener('keyup', (event) => {
 searchButton.addEventListener('click', async () => {
     const city = searchInput.value;
     weatherData = await getWeatherData(city);
-    convertWeatherDataTemperatures();
+    if (!isCelsius) temperatureToggle.click();
     updateUI(weatherData);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  currentDateDiv.textContent = getCurrentDate();
+  const { dayOfWeek, day, monthName, year } = getDate();
+  const next6Days = getNext6Days();
+  updateNext6DaysUI(next6Days);
+  currentDateDiv.textContent = `${dayOfWeek}, ${day} de ${monthName} de ${year}`;
 });
