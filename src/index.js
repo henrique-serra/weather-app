@@ -1,8 +1,5 @@
 import './styles/styles.css';
 
-// Importa todos os arquivos SVG da pasta icons
-const iconsContext = require.context('./icons', false, /\.svg$/);
-
 const currentDateDiv = document.getElementById('current-date');
 const searchInput = document.querySelector('.search-input');
 const searchButton = document.querySelector('.search-button');
@@ -27,11 +24,6 @@ class WeatherAPIError extends Error {
         this.statusCode = statusCode;
         this.details = details;
     }
-}
-
-function getIconPath(iconName) {
-  const iconKey = `./${iconName}.svg`;
-  return iconsContext.keys().includes(iconKey) ? iconsContext(iconKey) : null;
 }
 
 function getDate(date = new Date()) {
@@ -183,12 +175,11 @@ function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperat
     }, 300);
 }
 
-function updateWeatherIconsUI(weatherData) {
-  const currentWeatherIcon = weatherData.currentWeatherIcon;
-  weatherIconsImg[0].src = getIconPath(currentWeatherIcon);
+async function updateWeatherIconsUI(weatherData) {
   const weatherIcons = weatherData.weatherIcons;
   for (let i = 0; i < 7; i++) {
-    weatherIconsImg[i].src = getIconPath(weatherIcons[i]);
+    const weatherIconImport = await import(`./icons/${weatherIcons[i]}.svg`);
+    weatherIconsImg[i].src = weatherIconImport.default;
   }
 }
 
@@ -199,11 +190,11 @@ function updateNext6DaysUI(next6Days) {
   });
 }
 
-function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures }) {
+async function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures }) {
     updateLocationUI(resolvedAddress);
     updateWeatherDescriptionUI(currentTemperatureDescription);
     updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures });
-    updateWeatherIconsUI(weatherData);
+    await updateWeatherIconsUI(weatherData);
 }
 
 temperatureToggle.addEventListener('change', () => {
@@ -220,11 +211,12 @@ searchInput.addEventListener('keyup', (event) => {
 searchButton.addEventListener('click', async () => {
     const city = searchInput.value;
     weatherData = await getWeatherData(city);
+    console.log(weatherData);
     if (!isCelsius) {
         convertWeatherDataTemperatures();
         updateTemperaturesUI(weatherData);
     }
-    updateUI(weatherData);
+    await updateUI(weatherData);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
