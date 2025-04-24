@@ -13,3 +13,5 @@ yarn build
 ```
 
 to bundle your application
+
+PARA USAR, CONFIGURAR API KEYS DO VISUAL CROSSING E DO GOOGLE MAPS EM UM ARQUIVO .env.local
