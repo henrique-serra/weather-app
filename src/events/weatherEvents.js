@@ -8,7 +8,7 @@ import {
     searchButton 
 } from '../ui/weatherUI';
 
-export function setupWeatherEvents(weatherData, isCelsius) {
+export function setupWeatherEvents(weatherData) {
 
     temperatureToggle.addEventListener('change', () => {
         weatherData = convertWeatherDataTemperatures(weatherData);
@@ -29,5 +29,4 @@ export function setupWeatherEvents(weatherData, isCelsius) {
         await updateUI(weatherData);
     });
 
-    return { weatherData };
 } 

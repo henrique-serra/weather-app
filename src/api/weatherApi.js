@@ -60,6 +60,8 @@ export async function getWeatherData(city) {
         const minTemperatures = days.map(day => day.tempmin);
         const maxTemperatures = days.map(day => day.tempmax);
         const weatherIcons = days.map(day => day.icon);
+
+        console.log(data);
         
         return { 
             resolvedAddress, 
