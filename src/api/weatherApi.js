@@ -61,7 +61,15 @@ export async function getWeatherData(city) {
         const maxTemperatures = days.map(day => day.tempmax);
         const weatherIcons = days.map(day => day.icon);
         
-        return { resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures, weatherIcons, ...data };
+        return { 
+            resolvedAddress, 
+            currentTemperature,
+            currentTemperatureDescription,
+            minTemperatures,
+            maxTemperatures,
+            weatherIcons,
+            ...data,
+        };
     } catch (error) {
         if (error instanceof WeatherAPIError) {
             throw error;

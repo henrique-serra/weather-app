@@ -10,6 +10,9 @@ export const dayNames = document.querySelectorAll('.day-name');
 export const locationDiv = document.getElementById('location');
 export const weatherDescription = document.querySelector('.weather-description');
 export const currentDateDiv = document.getElementById('current-date');
+export const temperatureToggle = document.getElementById('temperature-toggle');
+export const searchInput = document.querySelector('.search-input');
+export const searchButton = document.querySelector('.search-button');
 
 export function updateLocationUI(resolvedAddress) {
     locationDiv.textContent = resolvedAddress;
@@ -19,12 +22,18 @@ export function updateWeatherDescriptionUI(description) {
     weatherDescription.textContent = description;
 }
 
-export function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures }, isCelsius) {
+// Função auxiliar para adicionar/remover a classe de transição
+function toggleTemperatureTransition(temperatureSpans, add) {
+    const action = add ? 'add' : 'remove';
+    temperatureSpans.currentTemperatureToday.classList[action]('temperature-transition');
+    temperatureSpans.minTemperature.forEach(span => span.classList[action]('temperature-transition'));
+    temperatureSpans.maxTemperature.forEach(span => span.classList[action]('temperature-transition'));
+    temperatureSpans.temperatureUnits.forEach(span => span.classList[action]('temperature-transition'));
+} 
+
+export function updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures }) {
     // Adiciona classe de transição
-    temperatureSpans.currentTemperatureToday.classList.add('temperature-transition');
-    temperatureSpans.minTemperature.forEach(span => span.classList.add('temperature-transition'));
-    temperatureSpans.maxTemperature.forEach(span => span.classList.add('temperature-transition'));
-    temperatureSpans.temperatureUnits.forEach(span => span.classList.add('temperature-transition'));
+    toggleTemperatureTransition(temperatureSpans, true);
 
     // Atualiza temperatura atual
     temperatureSpans.currentTemperatureToday.textContent = Math.round(currentTemperature);
@@ -39,15 +48,12 @@ export function updateTemperaturesUI({ currentTemperature, minTemperatures, maxT
 
     // Atualiza as unidades de temperatura
     temperatureSpans.temperatureUnits.forEach(unit => {
-        unit.textContent = isCelsius ? '°C' : '°F';
+        unit.textContent = temperatureToggle.checked ? '°F' : '°C';
     });
 
     // Remove a classe de transição após a animação
     setTimeout(() => {
-        temperatureSpans.currentTemperatureToday.classList.remove('temperature-transition');
-        temperatureSpans.minTemperature.forEach(span => span.classList.remove('temperature-transition'));
-        temperatureSpans.maxTemperature.forEach(span => span.classList.remove('temperature-transition'));
-        temperatureSpans.temperatureUnits.forEach(span => span.classList.remove('temperature-transition'));
+        toggleTemperatureTransition(temperatureSpans, false);
     }, 300);
 }
 
@@ -65,9 +71,9 @@ export function updateNext6DaysUI(next6Days) {
     });
 }
 
-export async function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures, weatherIcons }, isCelsius) {
+export async function updateUI({ resolvedAddress, currentTemperature, currentTemperatureDescription, minTemperatures, maxTemperatures, weatherIcons }) {
     updateLocationUI(resolvedAddress);
     updateWeatherDescriptionUI(currentTemperatureDescription);
-    updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures }, isCelsius);
+    updateTemperaturesUI({ currentTemperature, minTemperatures, maxTemperatures });
     await updateWeatherIconsUI(weatherIcons);
-} 
+}

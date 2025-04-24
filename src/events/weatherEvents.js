@@ -1,16 +1,18 @@
 import { getWeatherData } from '../api/weatherApi';
 import { convertWeatherDataTemperatures } from '../utils/temperatureUtils';
-import { updateUI } from '../ui/weatherUI';
+import { 
+    updateUI,
+    updateTemperaturesUI, 
+    temperatureToggle, 
+    searchInput, 
+    searchButton 
+} from '../ui/weatherUI';
 
 export function setupWeatherEvents(weatherData, isCelsius) {
-    const searchInput = document.querySelector('.search-input');
-    const searchButton = document.querySelector('.search-button');
-    const temperatureToggle = document.getElementById('temperature-toggle');
 
     temperatureToggle.addEventListener('change', () => {
-        weatherData = convertWeatherDataTemperatures(weatherData, isCelsius);
-        updateUI(weatherData, !isCelsius);
-        isCelsius = !isCelsius;
+        weatherData = convertWeatherDataTemperatures(weatherData);
+        updateTemperaturesUI(weatherData);
     });
 
     searchInput.addEventListener('keyup', (event) => {
@@ -22,11 +24,10 @@ export function setupWeatherEvents(weatherData, isCelsius) {
     searchButton.addEventListener('click', async () => {
         const city = searchInput.value;
         weatherData = await getWeatherData(city);
-        if (!isCelsius) {
-            weatherData = convertWeatherDataTemperatures(weatherData, isCelsius);
-        }
-        await updateUI(weatherData, isCelsius);
+        temperatureToggle.checked = false;
+        convertWeatherDataTemperatures(weatherData);
+        await updateUI(weatherData);
     });
 
-    return { weatherData, isCelsius };
+    return { weatherData };
 } 

@@ -5,7 +5,7 @@ import { setupWeatherEvents } from './events/weatherEvents';
 
 // Estado global da aplicação
 let weatherData = null;
-let isCelsius = false;
+
 
 // Inicialização da aplicação
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     currentDateDiv.textContent = `${dayOfWeek}, ${day} de ${monthName} de ${year}`;
     
     // Configura os eventos e atualiza o estado global
-    const { weatherData: updatedWeatherData, isCelsius: updatedIsCelsius } = setupWeatherEvents(weatherData, isCelsius);
+    const { weatherData: updatedWeatherData } = setupWeatherEvents(weatherData);
     weatherData = updatedWeatherData;
-    isCelsius = updatedIsCelsius;
 }); 
