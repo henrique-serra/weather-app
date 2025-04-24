@@ -1,6 +1,6 @@
 import './styles/styles.css';
 import { getDate, getNext6Days } from './utils/dateUtils';
-import { currentDateDiv, updateNext6DaysUI } from './ui/weatherUI';
+import { currentDateDiv, updateNext6DaysUI, showLoading, hideLoading } from './ui/weatherUI';
 import { setupWeatherEvents } from './events/weatherEvents';
 import { getCurrentLocation } from './api/geoLocationApi';
 import { getLocationFromCoordinates } from './api/geoCodingApi';
@@ -15,33 +15,34 @@ let weatherData = null;
 
 // Inicialização da aplicação
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded iniciado'); // <-- Log 1
+    console.log('DOMContentLoaded iniciado');
     try {
+        showLoading();
         const { latitude, longitude } = await getCurrentLocation();
-        console.log('Localização obtida:', latitude, longitude); // <-- Log 2
+        console.log('Localização obtida:', latitude, longitude);
 
         const currentLocation = await getLocationFromCoordinates(latitude, longitude);
-        console.log('Cidade obtida:', currentLocation); // <-- Log 3
+        console.log('Cidade obtida:', currentLocation);
 
         const { dayOfWeek, day, monthName, year } = getDate();
         const next6Days = getNext6Days();
-        console.log('Datas processadas'); // <-- Log 4
+        console.log('Datas processadas');
 
         updateNext6DaysUI(next6Days);
         currentDateDiv.textContent = `${dayOfWeek}, ${day} de ${monthName} de ${year}`;
-        console.log('UI de datas atualizada'); // <-- Log 5
+        console.log('UI de datas atualizada');
 
         weatherData = await getWeatherData(currentLocation);
-        // Configurando os eventos
         setupWeatherEvents(weatherData);
-        console.log('setupWeatherEvents retornou:', weatherData); // <-- Log 7
+        console.log('setupWeatherEvents retornou:', weatherData);
 
-        // Atualizando a UI com os dados da localização atual
         temperatureToggle.checked = false;
         convertWeatherDataTemperatures(weatherData);
         await updateUI(weatherData);
+        hideLoading();
         
     } catch (error) {
-        console.error("Erro durante a inicialização:", error); // <-- Captura de Erro
+        console.error("Erro durante a inicialização:", error);
+        hideLoading();
     }
 }); 

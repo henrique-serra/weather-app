@@ -5,7 +5,9 @@ import {
     updateTemperaturesUI, 
     temperatureToggle, 
     searchInput, 
-    searchButton 
+    searchButton,
+    showLoading,
+    hideLoading
 } from '../ui/weatherUI';
 
 export function setupWeatherEvents(weatherData) {
@@ -22,11 +24,18 @@ export function setupWeatherEvents(weatherData) {
     });
 
     searchButton.addEventListener('click', async () => {
-        const city = searchInput.value;
-        weatherData = await getWeatherData(city);
-        temperatureToggle.checked = false;
-        convertWeatherDataTemperatures(weatherData);
-        await updateUI(weatherData);
+        try {
+            showLoading();
+            const city = searchInput.value;
+            weatherData = await getWeatherData(city);
+            temperatureToggle.checked = false;
+            convertWeatherDataTemperatures(weatherData);
+            await updateUI(weatherData);
+        } catch (error) {
+            console.error("Erro ao buscar dados da cidade:", error);
+        } finally {
+            hideLoading();
+        }
     });
 
 } 

@@ -13,6 +13,15 @@ export const currentDateDiv = document.getElementById('current-date');
 export const temperatureToggle = document.getElementById('temperature-toggle');
 export const searchInput = document.querySelector('.search-input');
 export const searchButton = document.querySelector('.search-button');
+export const loadingContainer = document.getElementById('loading-container');
+
+export function showLoading() {
+    loadingContainer.classList.add('active');
+}
+
+export function hideLoading() {
+    loadingContainer.classList.remove('active');
+}
 
 export function updateLocationUI(resolvedAddress) {
     locationDiv.textContent = resolvedAddress;
